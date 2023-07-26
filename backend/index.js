@@ -87,20 +87,6 @@ app.get('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   let { name, number } = request.body
   
-  // if (name === undefined || number === undefined || !isUnique(name)) {
-  //   return response.status(404).json({error: 'name must be unique'})
-  // }
-
-  // let newId = Math.floor(Math.random() * 1000000) 
-
-  // let newPerson = {
-  //   name,
-  //   number,
-  //   id: newId
-  // }
-
-  // persons = persons.concat(newPerson)
-  // response.json(newPerson).status(200)
   if (name === undefined || number === undefined) {
     return response.status(400).json({error: 'content missing'})
   }
@@ -114,9 +100,22 @@ app.post('/api/persons', (request, response) => {
   })
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const editedPerson = {
+    name: body.name,
+    phoneNumber: body.number
+  }
+  People.findByIdAndUpdate(request.params.id, editedPerson, {new: true})
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))
+})
+
 app.delete('/api/persons/:id', (request, response, next) => {
   let id = request.params.id
-  // persons = persons.filter(person => person.id !== id)
   People.findByIdAndRemove(id)
     .then(result => {
       response.status(204).end()

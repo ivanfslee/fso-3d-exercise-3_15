@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "build:ui": "rm -rf build && cd ../frontend/ && npm run build && cp -r build ../backend",
-    "deploy:full": "npm run build:ui && npm run deploy"
+    "deploy:full": "npm run build:ui && git add . && git commit -m exercise3-17-solution && git push"
   },
   "author": "",
   "license": "ISC",

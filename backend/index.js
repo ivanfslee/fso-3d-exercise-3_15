@@ -15,6 +15,22 @@ app.use(morgan(':method :url :status :response-time ms - :req-body'));
 
 app.use(express.json())
 app.use(express.static('build'))
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+
 let persons = [
     { 
       "id": 1,
@@ -42,6 +58,7 @@ let persons = [
       "number": "32423432"
     }
 ]
+
 const isUnique = (name) => {
   let nameIdx = persons.findIndex(person => person.name === name) 
   return nameIdx === -1
@@ -106,6 +123,9 @@ app.delete('/api/persons/:id', (request, response, next) => {
     })
     .catch(error => next(error))
 })
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT 
 app.listen(PORT, () => {
